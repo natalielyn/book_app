@@ -35,7 +35,7 @@ app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 // Only show part of this to get students started
 function Book(info) {
   this.title = info.title || 'No title available';
-  this.author = info.authors || 'No author by that name';
+  this.author = info.author || 'No author available';
   this.description = info.description;
   this.image = info.imageLinks ? urlCheck(info.imageLinks.thumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
 };

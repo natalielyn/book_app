@@ -3,6 +3,7 @@
 // Application Dependencies
 const express = require('express');
 const superagent = require('superagent');
+const cors = require('cors');
 
 // Application Setup
 const app = express();

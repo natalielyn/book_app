@@ -37,7 +37,17 @@ function Book(info) {
   this.title = info.title || 'No title available';
   this.author = info.authors || 'No author by that name';
   this.description = info.description;
-  this.image_url = info.imageLinks.thumbnail || 'https://i.imgur.com/J5LVHEL.jpg';
+  this.image = info.imageLinks ? urlCheck(info.imageLinks.thumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
+};
+
+// Mixed Content Warning Filter
+const urlCheck = (data) => {
+  if (data.indexOf('https') === -1) {
+    let newData = data.replace('http', 'https');
+    return newData;
+  } else {
+    return data;
+  };
 };
 
 // Note that .ejs file extension is not required
@@ -58,8 +68,10 @@ function createSearch(request, response) {
 
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
-    .then(results => response.render('pages/searches/show', {searchResults: results}));
+    .then(results => response.render('pages/searches/show', {searchResults: results}))
+    .catch (err => console.error(err));
     // .then(results => console.log(results));
 
   // how will we handle errors?
 }
+

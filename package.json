@@ -1,0 +1,29 @@
+{
+  "name": "book_app",
+  "version": "1.0.0",
+  "description": "**Author**: Natalie Alway **Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natalielyn/book_app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/natalielyn/book_app/issues"
+  },
+  "homepage": "https://github.com/natalielyn/book_app#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "nodemon": "^1.19.4",
+    "pg": "^7.12.1",
+    "superagent": "^5.1.0"
+  }
+}

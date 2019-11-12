@@ -3,7 +3,10 @@
 // Application Dependencies
 const express = require('express');
 const superagent = require('superagent');
-const cors = require('cors');
+const pg = require('pg');
+
+// Environment Variable
+require('dotenv').config();
 
 // Application Setup
 const app = express();
@@ -31,16 +34,26 @@ app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 // HELPER FUNCTIONS
 // Only show part of this to get students started
 function Book(info) {
-  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
-
   this.title = info.title || 'No title available';
+  this.author = info.authors || 'No author by that name';
+  this.description = info.description;
+  this.image = info.imageLinks ? urlCheck(info.imageLinks.thumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
+};
 
-}
+// Mixed Content Warning Filter
+const urlCheck = (data) => {
+  if (data.indexOf('https') === -1) {
+    let newData = data.replace('http', 'https');
+    return newData;
+  } else {
+    return data;
+  };
+};
 
 // Note that .ejs file extension is not required
 function newSearch(request, response) {
   response.render('pages/index');
-}
+};
 
 // No API key required
 // Console.log request.body and request.body.search
@@ -55,8 +68,10 @@ function createSearch(request, response) {
 
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
-    .then(results => response.render('pages/searches/show', {searchResults: results}));
+    .then(results => response.render('pages/searches/show', {searchResults: results}))
+    .catch (err => console.error(err));
     // .then(results => console.log(results));
 
   // how will we handle errors?
 }
+

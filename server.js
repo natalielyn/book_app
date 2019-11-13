@@ -34,21 +34,26 @@ app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 // HELPER FUNCTIONS
 // Only show part of this to get students started
 function Book(info) {
+  const placeHolderImage = 'https://i.imgur.com/J5LVHEL.jpg';
+  let httpRegex = /^(http:\/\/)/g;
   this.title = info.title || 'No title available';
-  this.author = info.author || 'No author available';
-  this.description = info.description;
-  this.image = info.imageLinks ? urlCheck(info.imageLinks.thumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
+  this.author = info.authors? info.authors[0]: 'No author available';
+  this.description = info.description? info.description: 'No description';
+  this.image_url = info.imageLinks? info.imageLinks.smallThumbnail.replace(httpRegex, 'https://'):
+  // this.image_url = info.imageLinks? urlCheck(info.imageLinks.smallthumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
+  this.isbn = info.industryIdentifiers? info.industryIdentifiers[0].identifier: 'No ISBN Number';
+  this.id = info.industryIdentifiers;
 };
 
 // Mixed Content Warning Filter
-const urlCheck = (data) => {
-  if (data.indexOf('https') === -1) {
-    let newData = data.replace('http', 'https');
-    return newData;
-  } else {
-    return data;
-  };
-};
+// const urlCheck = (data) => {
+//   if (data.indexOf('https') === -1) {
+//     let newData = data.replace('http', 'https');
+//     return newData;
+//   } else {
+//     return data;
+//   };
+// };
 
 // Note that .ejs file extension is not required
 function newSearch(request, response) {
@@ -73,5 +78,9 @@ function createSearch(request, response) {
     // .then(results => console.log(results));
 
   // how will we handle errors?
+}
+
+function handleError(error, response) {
+  response.render('pages/error', {error: error})
 }
 

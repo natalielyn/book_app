@@ -85,8 +85,8 @@ function createSearch(request, response) {
         response.render('pages/searches/show', {result: result.row[0]}
         )
       })
-      
-    }
+      .catch (err => errorPage(err, response));
+    };
     
     function createBook(){
       //create a SQL statement to insert book

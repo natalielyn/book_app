@@ -76,24 +76,24 @@ function createSearch(request, response) {
     .catch (err => console.error(err));
     // .then(results => console.log(results));
 
-    function getBooks() {
-      //create a SQL statement to get all books in the the database that was saved previously
-      //render the books on an EJS page
-      //catch any errors
-    }
+//     function getBooks() {
+//       //create a SQL statement to get all books in the the database that was saved previously
+//       //render the books on an EJS page
+//       //catch any errors
+//     }
     
-    function createBook(){
-      //create a SQL statement to insert book
-      //return id of book back to calling function
+//     function createBook(){
+//       //create a SQL statement to insert book
+//       //return id of book back to calling function
     
-    }
+//     }
     
-    function getOneBook(){
-      //use the id passed in from the front-end (ejs form) 
+//     function getOneBook(){
+//       //use the id passed in from the front-end (ejs form) 
     
-    }
+//     }
 
-  // how will we handle errors?
+//   // how will we handle errors?
 }
 
 function handleError(error, response) {

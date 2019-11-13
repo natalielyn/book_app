@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS books
+DROP TABLE IF EXISTS books;
 
 CREATE TABLE books (
   id  SERIAL PRIMARY KEY,
@@ -7,5 +7,5 @@ CREATE TABLE books (
   isbn VARCHAR(255),
   image_url TEXT,
   description TEXT,
-  bookshelf VARCHAR(255),
-)
+  bookshelf VARCHAR(255)
+);

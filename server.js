@@ -4,11 +4,7 @@
 const express = require('express');
 const superagent = require('superagent');
 const pg = require('pg');
-
-// Environment Variable
 require('dotenv').config();
-
-// Application Setup
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -31,37 +27,45 @@ app.get('*', (request, response) => response.status(404).send('This route does n
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
-// HELPER FUNCTIONS
-// Only show part of this to get students started
+//API ROUTES
+app.get('/', getBooks) //define route to get all books
+app.get('/searches/new', newSearch);
+app.post('/searches', createSearch);
+app.post('/books', createBook)
+app.get('/books/:id', getOneBook);
+
+// BOOK CONSTRUCTOR FUNCTION
 function Book(info) {
-  this.title = info.title || 'No title available';
-  this.author = info.author || 'No author available';
-  this.description = info.description;
-  this.image = info.imageLinks ? urlCheck(info.imageLinks.thumbnail) : 'https://i.imgur.com/J5LVHEL.jpg';
+  const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
+  let httpRegex = /^(http:\/\/)/g
+  this.title = info.title ? info.title : 'No title available';
+  this.author = info.authors ? info.authors[0] : 'No author available';
+  this.isbn = info.industryIdentifiers ? `ISBN_13 ${info.industryIdentifiers[0].identifier}` : 'No ISBN available';
+  this.image_url = info.imageLinks ? info.imageLinks.smallThumbnail.replace(httpRegex, 'https://') : placeholderImage;
+  this.description = info.description ? info.description : 'No description available';
+  this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 };
 
 // Mixed Content Warning Filter
-const urlCheck = (data) => {
-  if (data.indexOf('https') === -1) {
-    let newData = data.replace('http', 'https');
-    return newData;
-  } else {
-    return data;
-  };
-};
+// const urlCheck = (data) => {
+//   if (data.indexOf('https') === -1) {
+//     let newData = data.replace('http', 'https');
+//     return newData;
+//   } else {
+//     return data;
+//   };
+// };
 
 // Note that .ejs file extension is not required
 function newSearch(request, response) {
   response.render('pages/index');
 };
 
-// No API key required
+
 // Console.log request.body and request.body.search
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
-  // console.log(request.body);
-  // console.log(request.body.search);
 
   if (request.body.search[1] === 'title') { url += `+intitle:${request.body.search[0]}`; }
   if (request.body.search[1] === 'author') { url += `+inauthor:${request.body.search[0]}`; }
@@ -72,6 +76,27 @@ function createSearch(request, response) {
     .catch (err => console.error(err));
     // .then(results => console.log(results));
 
-  // how will we handle errors?
+//     function getBooks() {
+//       //create a SQL statement to get all books in the the database that was saved previously
+//       //render the books on an EJS page
+//       //catch any errors
+//     }
+    
+//     function createBook(){
+//       //create a SQL statement to insert book
+//       //return id of book back to calling function
+    
+//     }
+    
+//     function getOneBook(){
+//       //use the id passed in from the front-end (ejs form) 
+    
+//     }
+
+//   // how will we handle errors?
+}
+
+function handleError(error, response) {
+  response.render('pages/error', {error: error})
 }
 

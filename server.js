@@ -12,6 +12,11 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({extended:true}));
 app.use(express.static('public'));
 
+//CLIENT
+const client = new pg.Client(process.env.DATABASE_URL);
+client.connect();
+client.on('error', err => console.error(err));
+
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
 
@@ -46,15 +51,6 @@ function Book(info) {
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 };
 
-// Mixed Content Warning Filter
-// const urlCheck = (data) => {
-//   if (data.indexOf('https') === -1) {
-//     let newData = data.replace('http', 'https');
-//     return newData;
-//   } else {
-//     return data;
-//   };
-// };
 
 // Note that .ejs file extension is not required
 function newSearch(request, response) {
@@ -89,10 +85,13 @@ function createSearch(request, response) {
     };
     
     function createBook(){
-      //create a SQL statement to insert book
-      //return id of book back to calling function
-    
-    }
+      let {title, description, author, isbn, image_url} = request.body;
+      let SQL = `INSERT INTO books (title, author, description, isbn, image_url,) VALUES($1, $2, $3, $4,);`;
+      let values = [title, description, author, isbn, image_url];
+      return client.query(SQL, values)
+       .then(response.redirect('/'))
+       .catch (err => errorPage(err, response));
+    };
     
     function getOneBook(){
       //use the id passed in from the front-end (ejs form) 

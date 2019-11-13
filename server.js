@@ -76,22 +76,28 @@ function createSearch(request, response) {
     .catch (err => console.error(err));
     // .then(results => console.log(results));
 
-//     function getBooks() {
-//       //create a SQL statement to get all books in the the database that was saved previously
-//       //render the books on an EJS page
-//       //catch any errors
-//     }
+    function getBooks() {
+      let SQL = `SELECT * FROM books WHERE id=$1;`;
+      let values = [request.query.id];
+
+      return clientInformation.query(SQL, values)
+      .then(result => {
+        response.render('pages/searches/show', {result: result.row[0]}
+        )
+      })
+      
+    }
     
-//     function createBook(){
-//       //create a SQL statement to insert book
-//       //return id of book back to calling function
+    function createBook(){
+      //create a SQL statement to insert book
+      //return id of book back to calling function
     
-//     }
+    }
     
-//     function getOneBook(){
-//       //use the id passed in from the front-end (ejs form) 
+    function getOneBook(){
+      //use the id passed in from the front-end (ejs form) 
     
-//     }
+    }
 
 //   // how will we handle errors?
 }

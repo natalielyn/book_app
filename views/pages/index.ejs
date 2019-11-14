@@ -1,45 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Collection</title>
-    <link rel="stylesheet" href="/styles/reset.css">
-    <link rel="stylesheet" href="/styles/icons.css">
-    <link rel="stylesheet" href="/styles/base.css">
-    <link rel="stylesheet" href="/styles/layout.css">
-    <link rel="stylesheet" href="/styles/modules/error.css">
-    <link rel="stylesheet" href="/styles/modules/partials/header.css">
-    <link rel="stylesheet" href="/styles/modules/partials/footer.css">
-    <link rel="icon" type="image/png" href="https://www.freeiconspng.com/uploads/book-icon--icon-search-engine-6.png">
-    <link rel="stylesheet" href="/styles/modules/searches/show.css">
-    <link rel="stylesheet" href="/styles/modules/books/show.css">
-  </head>
-  <body>
-    <header>
-      <div>
-        <a href="/">
-          <h1>Best Books!</h1>
-        </a>
-      </div>
-      <nav>
-        <div class="icon-menu"></div>
-        <ul>
-          <li><a href="/">Home</a></li>
-        </ul>
-      </nav>
-    </header>
+  <%- include ../layout/head.ejs %>
     <main>
-      <h4>Search Results</h4>
+      <h4>Saved Books</h4>
       <ul class="search-results">
-        <% savedBooks.forEach(books => { %>
+        <% results.forEach(books => { %>
           <li data-books-id="<%= books.isbn %>">
             <div class="books-container">
-              <img src=<%= books.image_url %>>
+              <img src="<%= books.image_url %>">
               <section>
                 <h3><%= books.title %></h3>
-                <span><%= books.author %></span>
-                <p class="desc"><%= books.description %></p>        
+                <span>Author: <%= books.author %></span>
+                <p class="desc">Description: <%= books.description %></p>        
               </section>
             </section>
           </li>
@@ -54,6 +26,8 @@
         <li><span class="icon-linkedin2"><a href=""></a></span></li>
       </ul>
     </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="../../../public/js/app.js"></script>
     <script src="/server.js"></script>
   </body>
 </html>

@@ -27,7 +27,7 @@ app.set('views', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
 
 // API Routes
-app.get('/', getBooks) //define route to get all books
+app.get('/', getBooks); 
 app.get('/searches/new', newSearch);
 app.post('/searches', createSearch);
 app.post('/books', createBook)
@@ -47,8 +47,16 @@ function Book(info) {
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 };
 
+function getBooks(request, response) {
+  let SQL = 'SELECT * FROM books;';
+   return client.query(SQL)
+   .then (results => response.render('index', {results: results.rows}))
+  //  .then (results => response.render('index', {searchedBooks: results.rows, count: results.rows.length}))
+    .catch(err => handleError(err, response));
+ };
+
 function newSearch(request, response) {
-  response.render('pages/index');
+  response.render('searches/new');
 };
 
 function createSearch(request, response) {
@@ -59,16 +67,10 @@ function createSearch(request, response) {
 
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
-    .then(results => response.render('pages/searches/show', { searchResults: results }))
+    .then(results => response.render('searches/show', { results: results }))
     .catch(err => handleError(err, response));
 };
 
-function getBooks(request, response) {
-  let SQL = `SELECT * FROM books`;
-   return client.query(SQL)
-    .then(results => response.render('index', {savedBooks: results.rows}))
-    .catch(err => handleError(err, response));
- };
 
 function createBook(request, response){
   let normailze = request.body.bookshelf.toLowerCase()
@@ -86,17 +88,16 @@ function createBook(request, response){
   .catch (err => errorPage(err, response));
 }
 
-function getOneBook(){
-  getBookShelves()
-  .then(shelves => {
-  let SQL = `SELECT * FROM books WHERE id=$1`;
-  let values = [request.params.id];
-  client.query(SQL, values)
-  .then(result => response.render('pages/books/show', {books: result.row[0], bookshelves: shelves.rows}))
-  
-})
-.catch(handleError);
-};
+  function getOneBook(request,response){
+    getBookShelves()
+      .then(shelves => {
+        let SQL = 'SELECT * FROM books WHERE id=$1';
+        let values = [request.params.id];
+        return client.query(SQL, values)
+          .then(result => response.render('books/show', {result: result.rows[0], bookshelves: shelves.rows}))
+      })
+      .catch(handleError);
+   }
 
 function getBookShelves() {
   let SQL = 'SELECT DISTINCT bookshelf FROM books ORDER BY bookshelf';

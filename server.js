@@ -47,13 +47,6 @@ function Book(info) {
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 };
 
-function getBooks(request, response) {
-  let SQL = 'SELECT * FROM books;';
-   return client.query(SQL)
-   .then (results => response.render('index', {results: results.rows}))
-  //  .then (results => response.render('index', {searchedBooks: results.rows, count: results.rows.length}))
-    .catch(err => handleError(err, response));
- };
 
 function newSearch(request, response) {
   response.render('searches/new');
@@ -70,13 +63,20 @@ function createSearch(request, response) {
     .then(results => response.render('searches/show', { results: results }))
     .catch(err => handleError(err, response));
 };
+//BOOK CONSTRUCTOR FUNCTION
+function getBooks(request, response) {
+  let SQL = 'SELECT * FROM books;';
+   return client.query(SQL)
+   .then (results => response.render('index', {results: results.rows}))
+    .catch(err => handleError(err, response));
+ };
 
-
+ //CREATES A NEW BOOK
 function createBook(request, response){
   let normailze = request.body.bookshelf.toLowerCase()
   let {title, description, author, isbn, image_url} = request.body;
   let SQL = `INSERT INTO books (title, author, description, isbn, image_url, bookshelf) VALUES($1, $2, $3, $4, $5, $6);`;
-  let values = [title, description, author, isbn, image_url, normailze, bookshelf];
+  let values = [title, description, author, isbn, image_url, bookshelf];
 
   return client.query(SQL, values)
   .then( () => {
@@ -87,14 +87,14 @@ function createBook(request, response){
   })
   .catch (err => errorPage(err, response));
 }
-
+// SELECTS ONE BOOK
   function getOneBook(request,response){
     getBookShelves()
       .then(shelves => {
         let SQL = 'SELECT * FROM books WHERE id=$1';
         let values = [request.params.id];
         return client.query(SQL, values)
-          .then(result => response.render('books/show', {result: result.rows[0], bookshelves: shelves.rows}))
+          .then(results => response.render('books/show', {results: results.rows[0], bookshelves: shelves.rows}))
       })
       .catch(handleError);
    }
@@ -103,6 +103,25 @@ function getBookShelves() {
   let SQL = 'SELECT DISTINCT bookshelf FROM books ORDER BY bookshelf';
   return client.query(SQL)
 };
+
+// function updateBook(request, response) {
+//   let {title, description, author, isbn, image_url, bookshelf} = request.body
+//   let SQL = 'UPDATE books SET title =$1, discription =$2, isbn=...ect WHERE id=$7';
+
+//   let values = [title, author, isbn, image_url, description, bookshelf];
+//   client.query(SQL, values);
+//   .then(response.redirect(`/books/${request.id}`))
+//   .catch(handleError);
+// }
+
+// function deleteBook(request, respone) {
+//   let SQL = `DELETE FROM books WHERE id=$1`;
+//   let values = [request.params.id];
+
+//   return client.query(SQL, values)
+//   .then(response.redirect('/'))
+//   .catch(handleError);
+// }
 
 
 

@@ -34,11 +34,6 @@ app.post('/books', createBook)
 app.get('/books/:id', getOneBook);
 
 
-
-app.get('*', (request, response) => response.status(404).send('This route does not exist'));
-
-app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
-
 // HELPER FUNCTIONS
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
@@ -50,11 +45,11 @@ function Book(info) {
   this.image_url = info.imageLinks ? info.imageLinks.smallThumbnail.replace(httpRegex, 'https://') : placeholderImage;
   this.description = info.description ? info.description : 'No description available';
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
-}
+};
 
 function newSearch(request, response) {
   response.render('pages/index');
-}
+};
 
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
@@ -66,16 +61,14 @@ function createSearch(request, response) {
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
     .then(results => response.render('pages/searches/show', { searchResults: results }))
     .catch(err => handleError(err, response));
-}
+};
 
 function getBooks(request, response) {
   let SQL = `SELECT * FROM books`;
-  client.query(SQL).then(results => {
-    const bookCount = results.rowCount;
-    const books = results.rows.map(book => new Book(book));
-    response.render('pages/index', { savedBooks: books, bookCount: bookCount });
-  });
- }
+   return client.query(SQL)
+    .then(results => response.render('index', {savedBooks: results.rows}))
+    .catch(err => handleError(err, response));
+ };
 
 function createBook(request, response){
   let normailze = request.body.bookshelf.toLowerCase()
@@ -94,14 +87,26 @@ function createBook(request, response){
 }
 
 function getOneBook(){
+  getBookShelves()
+  .then(shelves => {
   let SQL = `SELECT * FROM books WHERE id=$1`;
   let values = [request.params.id];
   client.query(SQL, values)
-  .then(result => response.render('pages/books/show' {books: result.row[0], bookshelves: SVGPathSegLinetoVerticalAbs.rows}))
-  .catch
-}
+  .then(result => response.render('pages/books/show', {books: result.row[0], bookshelves: shelves.rows}))
+  
+})
+.catch(handleError);
+};
 
-function getBookShelves()
+function getBookShelves() {
+  let SQL = 'SELECT DISTINCT bookshelf FROM books ORDER BY bookshelf';
+  return client.query(SQL)
+};
+
+
+
+app.get('*', (request, response) => response.status(404).send('This route does not exist'));
+app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
 
 function handleError(error, response) {
   response.render('pages/error', { error: error });

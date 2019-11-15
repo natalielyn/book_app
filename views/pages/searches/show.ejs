@@ -40,16 +40,11 @@
       <ul class="search-results">
 
         <% results.forEach(books => { %>
-          <li data-books-id="<%= books.isbn %>">
-            <div class="books-container">
-              <img src="<%= books.image_url %>" >
-              <div>
-                <h2><%= books.title %></h2>
-                <h3>Author: <%= books.author %></h3>
-                <p class="desc">Description: <%= books.description %></p> 
+        <%- include('../books/detail', {books: books}) %>
                 <button class="select-button" type="submit">Save this book</button>
                 </div>
-                <section class="hide-me" id="hidden-form">
+                <form class="hide-me" action="<%= formAction === 'Add' ? '/book' : `/books/${element.id}` %>" method="post">
+                <input type="hidden" name="_method" value="<%= formAction === 'Add' ? 'post' : 'put' %>" >
                   <form action="/books" method="post" class="form-container">
                     <input type="text" name="title" value="<%= books.title %>" required>
                     <input type="text" name="author" value="<%= books.author %>" required>

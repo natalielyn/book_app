@@ -7,6 +7,7 @@ const pg = require('pg');
 const path = require('path');
 require('dotenv').config();
 const app = express();
+const methodOverride = require('method-override');
 const PORT = process.env.PORT || 3000;
 
 // Application Middleware
@@ -26,12 +27,23 @@ app.use('/public', express.static('public'));
 app.set('views', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
 
+//METHOD OVERRIDE
+app.use(methodOverride((request, response) => {
+  if(request.body && typeof request.body === 'object' && '_method' in request.body) {
+    let method = request.body._method;
+    delete request.body._method;
+    return method;
+  };
+}));
+
 // API Routes
 app.get('/', getBooks); 
 app.get('/searches/new', newSearch);
 app.post('/searches', createSearch);
 app.post('/books', createBook)
 app.get('/books/:id', getOneBook);
+app.put('/books/:id', updateBook);
+app.delete('/books/:id', deleteBook)
 
 
 // HELPER FUNCTIONS
@@ -73,10 +85,10 @@ function getBooks(request, response) {
 
  //CREATES A NEW BOOK
 function createBook(request, response){
-  let normailze = request.body.bookshelf.toLowerCase()
+  let normalize = request.body.bookshelf.toLowerCase();
   let {title, description, author, isbn, image_url} = request.body;
-  let SQL = `INSERT INTO books (title, author, description, isbn, image_url, bookshelf) VALUES($1, $2, $3, $4, $5, $6);`;
-  let values = [title, description, author, isbn, image_url, bookshelf];
+  let SQL = 'INSERT INTO books (title, author, description, isbn, image_url, bookshelf) VALUES($1, $2, $3, $4, $5, $6);';
+  let values = [title, author, description, isbn, image_url, normalize];
 
   return client.query(SQL, values)
   .then( () => {
@@ -104,24 +116,23 @@ function getBookShelves() {
   return client.query(SQL)
 };
 
-// function updateBook(request, response) {
-//   let {title, description, author, isbn, image_url, bookshelf} = request.body
-//   let SQL = 'UPDATE books SET title =$1, discription =$2, isbn=...ect WHERE id=$7';
+function updateBook(request, response) {
+  let {title, author, isbn, image_url, description, bookshelf} = request.body;
+  let SQL = 'UPDATE books SET title=$1, author=$2, isbn=$3, image_url=$4, description=$5, bookshelf=$6, WHERE id=$7';
+  let values = [title, author, isbn, image_url, description, bookshelf, request.params.id];
+  client.query(SQL, values)
+    .then(response.redirect(`/books/${request.params.id}`))
+    .catch(handleError);
+}
 
-//   let values = [title, author, isbn, image_url, description, bookshelf];
-//   client.query(SQL, values);
-//   .then(response.redirect(`/books/${request.id}`))
-//   .catch(handleError);
-// }
+function deleteBook(request, respone) {
+  let SQL = `DELETE FROM books WHERE id=$1`;
+  let values = [request.params.id];
 
-// function deleteBook(request, respone) {
-//   let SQL = `DELETE FROM books WHERE id=$1`;
-//   let values = [request.params.id];
-
-//   return client.query(SQL, values)
-//   .then(response.redirect('/'))
-//   .catch(handleError);
-// }
+  return client.query(SQL, values)
+  .then(response.redirect('/'))
+  .catch(handleError);
+}
 
 
 

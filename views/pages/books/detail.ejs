@@ -1,9 +1,13 @@
 <section id="bookSearch" class="showBook">
-  <li data-books-id="<%= books.isbn %>"></li>
   <div class="books-container">
   <img src="<%= books.image_url %>" >
-  <div>
-  <h2><%= books.title %></h2>
+  <h2>Title: <%= books.title %></h2>
+  <h4>ISBN: <%= books.isbn %></h3>
   <h3>Author: <%= books.author %></h3>
   <p class="desc">Description: <%= books.description %></p> 
+  <button class="unlist" id="update-button">Update Details</button>
+  <form class="unlist" action="/books<%= books.id %>" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <button id="delete-button">Delete Book</button>
+  </form>
 </section>

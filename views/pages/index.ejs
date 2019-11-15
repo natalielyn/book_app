@@ -2,7 +2,7 @@
 <html lang="en">
   <%- include ../layout/head.ejs %>
     <main>
-      <h4>Saved Books</h4>
+      <h4>My Library</h4>
       <ul class="search-results">
         <% results.forEach(books => { %>
           <li data-books-id="<%= books.isbn %>">
@@ -19,12 +19,6 @@
       </ul>
     </main>
     <footer>
-      <ul>
-        <li><span class="icon-mail2"><a href=""></a></span></li>
-        <li><span class="icon-twitter"><a href=""></a></span></li>
-        <li><span class="icon-github"><a href=""></a></span></li>
-        <li><span class="icon-linkedin2"><a href=""></a></span></li>
-      </ul>
     </footer>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="../../../public/js/app.js"></script>

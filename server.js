@@ -1,6 +1,6 @@
 'use strict';
 
-// Application Dependencies
+// APPLICATION DEPENDENCIES --------------------
 const express = require('express');
 const superagent = require('superagent');
 const pg = require('pg');
@@ -10,24 +10,22 @@ const app = express();
 const methodOverride = require('method-override');
 const PORT = process.env.PORT || 3000;
 
-// Application Middleware
+// MIDDLEWARE -----------------------------------
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-// Set the view engine for server-side templating
-app.set('view engine', 'ejs');
 
-//CLIENT
+//CLIENT -----------------------------------------
 const client = new pg.Client(process.env.DATABASE_URL);
 client.connect();
 client.on('error', err => console.error(err));
 
-// View Engine
+// VIEW ENGINE -----------------------------------
 app.use('/public', express.static('public'));
 app.set('views', path.join(__dirname, 'views/pages'));
 app.set('view engine', 'ejs');
 
-//METHOD OVERRIDE
+//METHOD OVERRIDE --------------------------------- 
 app.use(methodOverride((request, response) => {
   if(request.body && typeof request.body === 'object' && '_method' in request.body) {
     let method = request.body._method;
@@ -36,7 +34,7 @@ app.use(methodOverride((request, response) => {
   };
 }));
 
-// API Routes
+// API ROUTES --------------------------------------
 app.get('/', getBooks); 
 app.get('/searches/new', newSearch);
 app.post('/searches', createSearch);
@@ -46,7 +44,7 @@ app.put('/books/:id', updateBook);
 app.delete('/books/:id', deleteBook)
 
 
-// HELPER FUNCTIONS
+// BOOK CONSTRUCTOR FUNCTION ------------------------
 function Book(info) {
   const placeholderImage = 'https://i.imgur.com/J5LVHEL.jpg';
   let httpRegex = /^(http:\/\/)/g
@@ -59,11 +57,10 @@ function Book(info) {
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 };
 
-
+// CREATE SEARCHES -----------------------------------
 function newSearch(request, response) {
   response.render('searches/new');
 };
-
 function createSearch(request, response) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
@@ -75,7 +72,9 @@ function createSearch(request, response) {
     .then(results => response.render('searches/show', { results: results }))
     .catch(err => handleError(err, response));
 };
-//BOOK CONSTRUCTOR FUNCTION
+
+
+// HELPER FUNCTIONS ---------------------------------
 function getBooks(request, response) {
   let SQL = 'SELECT * FROM books;';
    return client.query(SQL)
@@ -100,22 +99,24 @@ function createBook(request, response){
   .catch (err => errorPage(err, response));
 }
 // SELECTS ONE BOOK
-  function getOneBook(request,response){
-    getBookShelves()
-      .then(shelves => {
-        let SQL = 'SELECT * FROM books WHERE id=$1';
-        let values = [request.params.id];
-        return client.query(SQL, values)
-          .then(results => response.render('books/show', {results: results.rows[0], bookshelves: shelves.rows}))
-      })
-      .catch(handleError);
-   }
+function getOneBook(request,response){
+  getBookShelves()
+    .then(shelves => {
+      let SQL = 'SELECT * FROM books WHERE id=$1';
+      let values = [request.params.id];
+      return client.query(SQL, values)
+        .then(result => response.render('books/show', {result: result.rows[0], bookshelves: shelves.rows}))
+    })
+    .catch(handleError);
+}
 
 function getBookShelves() {
   let SQL = 'SELECT DISTINCT bookshelf FROM books ORDER BY bookshelf';
   return client.query(SQL)
 };
 
+
+// UPDATE AND DELETE BOOKS ------------------------------------
 function updateBook(request, response) {
   let {title, author, isbn, image_url, description, bookshelf} = request.body;
   let SQL = 'UPDATE books SET title=$1, author=$2, isbn=$3, image_url=$4, description=$5, bookshelf=$6, WHERE id=$7';
@@ -126,7 +127,7 @@ function updateBook(request, response) {
 }
 
 function deleteBook(request, respone) {
-  let SQL = `DELETE FROM books WHERE id=$1`;
+  let SQL = 'DELETE FROM books WHERE id=$1';
   let values = [request.params.id];
 
   return client.query(SQL, values)
@@ -135,6 +136,7 @@ function deleteBook(request, respone) {
 }
 
 
+//OTHER STUFF -----------------------------------
 
 app.get('*', (request, response) => response.status(404).send('This route does not exist'));
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));

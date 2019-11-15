@@ -37,11 +37,8 @@
     <main>
       <h1>Book Details</h1>
       <a href="/"><button>To Library</button></a>
-      <%- include('./detail', {books: results}) %>
-      <button class="viewButton">Update Details</button>
-
-
-      
+      <%- include('./detail', {books: books}) %>
+      <%- include('./edit', { books: books, bookshleves: bookshelves, formAction: 'update'}) %>
     </main>
     <footer>
       <ul>

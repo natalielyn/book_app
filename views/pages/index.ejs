@@ -1,39 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include ../layout/head.ejs %>
-    <main>
-      <h4>Saved Books</h4>
-      <ul class="search-results">
-        <% results.forEach(books => { %>
-          <li data-books-id="<%= books.isbn %>">
-            <div class="books-container">
-              <img src="<%= books.image_url %>">
-              <section>
-                <h3><%= books.title %></h3>
-                <span>Author: <%= books.author %></span>
-                <p class="desc">Description: <%= books.description %></p>        
-              </section>
-            </section>
-          </li>
-        <% }) %>
-      </ul>
-    </main>
-    <footer>
-      <ul>
-        <li><span class="icon-mail2"><a href=""></a></span></li>
-        <li><span class="icon-twitter"><a href=""></a></span></li>
-        <li><span class="icon-github"><a href=""></a></span></li>
-        <li><span class="icon-linkedin2"><a href=""></a></span></li>
-      </ul>
-    </footer>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="../../../public/js/app.js"></script>
-    <script src="/server.js"></script>
-  </body>
+
+<head>
+    <%- include('../layout/head') %>
+  <link rel="stylesheet" href="styles/modules/books/show.css">
+</head>
+
+<body>
+    <%- include('../layout/header') %>
+  <main>
+    <h4>Saved Books (<%= count %>)</h4>
+    <ul>
+      <% result.forEach(book => { %>
+      <li class="book-items" data-book-id="<%= book.id %>">
+        <section class="book-container detail-view">
+          <img src="<%= book.image_url %>">
+          <h3>Title: <%= book.title %></h3>
+          <h4>Author: <%= book.author %></h4>
+          <p class="isbn">
+           ISBN#: <%= book.isbn %>
+            <% if (book.bookshelf) { %> 
+            <br>
+            Bookshelf:
+            <%= book.bookshelf %>
+            <% } %>
+          </p>
+          <p class="detail-button"><a href="/books/<%= book.id %>">View Book Details</a></p>
+        </section>
+      </li>
+      <% }) %>
+    </ul>
+  </main>
+  <%- include('../layout/footer') %>
+</body>
+
 </html>
-
-
-
 
 
 
